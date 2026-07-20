@@ -1,68 +1,50 @@
-"""
-Diagnostic: isolate why aqi_neural_network_model fails to load.
-Run standalone: python diagnose_nn.py
-"""
 import os
-import shutil
 import hopsworks
 from dotenv import load_dotenv
 
+# 1. .env file se environment variables load karein
 load_dotenv()
 
-project = hopsworks.login(
-    project=os.getenv("HOPSWORKS_PROJECT", "aqi_predictor_2026"),
-    host=os.getenv("HOPSWORKS_HOST", "eu-west.cloud.hopsworks.ai"),
-    port=443,
-    api_key_value=os.getenv("HOPSWORKS_API_KEY"),
-)
-mr = project.get_model_registry()
+HOPSWORKS_API_KEY = os.getenv("HOPSWORKS_API_KEY")
+HOPSWORKS_PROJECT = os.getenv("HOPSWORKS_PROJECT", "aqi_predictor_2026")
 
-# Force a clean re-download
-local_cache = os.path.expanduser("/tmp/hopsworks/models/aqi_predictor_2026/aqi_neural_network_model")
-if os.path.exists(local_cache):
-    shutil.rmtree(local_cache)
-    print(f"Removed stale local cache: {local_cache}")
+if not HOPSWORKS_API_KEY:
+    print("❌ Error: HOPSWORKS_API_KEY .env file mein nahi mili!")
+    exit(1)
 
-models = mr.get_models("aqi_neural_network_model")
-print(f"Found {len(models)} version(s) of aqi_neural_network_model")
+print("⚡ Hopsworks Feature Store se connect ho rahe hain...")
 
-model_meta = models[0]
-print(f"Downloading version {model_meta.version}...")
-model_dir = model_meta.download()
-print(f"Downloaded to: {model_dir}")
+# 2. Hopsworks login
+try:
+    project = hopsworks.login(
+        api_key_value=HOPSWORKS_API_KEY,
+        project=HOPSWORKS_PROJECT
+    )
+    fs = project.get_feature_store()
+    print("✅ Hopsworks connection successful!")
+except Exception as e:
+    print(f"❌ Connection error: {e}")
+    exit(1)
 
-print("\nFiles present:")
-for f in os.listdir(model_dir):
-    full = os.path.join(model_dir, f)
-    print(f"  - {f} ({os.path.getsize(full)} bytes)")
+# 3. Feature Group ka naam aur version (Apne feature group ke mutabiq name adjust kar lein agar different ho)
+FEATURE_GROUP_NAME = "aqi_predictions"  # Agar aap ka name alag hai toh yahan change kar lein
+FEATURE_GROUP_VERSION = 6
 
-h5_path = os.path.join(model_dir, "model.h5")
-scaler_path = os.path.join(model_dir, "scaler.pkl")
-feat_path = os.path.join(model_dir, "feature_names.txt")
+try:
+    print(f"📊 Feature group '{FEATURE_GROUP_NAME}' se data fetch ho raha hai...")
+    fg = fs.get_feature_group(name=FEATURE_GROUP_NAME, version=FEATURE_GROUP_VERSION)
+    
+    # Hopsworks se data Pandas DataFrame mein read karna
+    df = fg.read()
 
-print(f"\nmodel.h5 present: {os.path.exists(h5_path)}")
-print(f"scaler.pkl present: {os.path.exists(scaler_path)}")
-print(f"feature_names.txt present: {os.path.exists(feat_path)}")
+    # 4. Total rows aur Last 5 rows print karna
+    print("\n" + "=" * 50)
+    print(f"📈 TOTAL ROWS IN HOPSWORKS: {len(df)}")
+    print("=" * 50)
 
-if os.path.exists(h5_path):
-    print("\nTrying to load model.h5 with TensorFlow/Keras...")
-    try:
-        from tensorflow.keras.models import load_model as keras_load_model
-        m = keras_load_model(h5_path, compile=False)  # skip broken legacy metrics deserialization
-        print("✅ SUCCESS — model.h5 loaded fine.")
-        m.summary()
-    except Exception as e:
-        print(f"❌ FAILED to load model.h5: {e}")
-        import traceback
-        traceback.print_exc()
+    print("\n📌 LAST 5 ROWS:")
+    print(df.tail(5))
+    print("=" * 50)
 
-if os.path.exists(scaler_path):
-    print("\nTrying to load scaler.pkl...")
-    try:
-        import joblib
-        s = joblib.load(scaler_path)
-        print(f"✅ SUCCESS — scaler loaded: {s}")
-    except Exception as e:
-        print(f"❌ FAILED to load scaler.pkl: {e}")
-
-        
+except Exception as e:
+    print(f"❌ Data read karne mein error aya: {e}")

@@ -2,7 +2,7 @@ name: Hourly Feature Pipeline
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Runs every hour
+    - cron: '25 * * * *'  # Runs every hour
   workflow_dispatch:      # Manual trigger button
 
 jobs:
