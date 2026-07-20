@@ -1,0 +1,9 @@
+# Prevents Pushing Secrets to Github.
+.env
+.venv/
+__pycache__/
+*.pyc
+logs/
+aqi_model_dir/
+aqi_models/
+test_dummy_model_dir/
