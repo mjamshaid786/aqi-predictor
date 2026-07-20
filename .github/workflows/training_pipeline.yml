@@ -1,10 +1,9 @@
-# Daily Automation Trigger
-name: Daily Training Pipeline
+name: Daily Model Training Pipeline
 
 on:
   schedule:
     - cron: '0 0 * * *'  # Runs daily at midnight
-  workflow_dispatch:     # Manual run button
+  workflow_dispatch:     # Manual trigger button
 
 jobs:
   run-training-pipeline:
@@ -24,9 +23,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Training Pipeline
+      # Step 4: Train Model on updated data & push to Registry
+      - name: Run Model Training & Save to Registry
         env:
           HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
           HOPSWORKS_PROJECT: ${{ secrets.HOPSWORKS_PROJECT }}
         run: |
-          python src/src/training_pipeline.py
+          python src/training_pipeline.py
