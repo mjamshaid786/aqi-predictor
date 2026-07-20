@@ -388,20 +388,4 @@ else:
                 fig_corr.update_layout(template="plotly_dark")
                 st.plotly_chart(fig_corr, use_container_width=True)
 
-    # ------------------------------------------------------------------------
-    # TAB 3: Raw Feature Store Inspection
-    # ------------------------------------------------------------------------
-    with tab_data:
-        st.subheader("🗄️ Hopsworks Feature Group Explorer")
-        st.caption(f"Feature Group Name: `{FG_NAME}` | Version: `{FG_VERSION}`")
-        
-        st.dataframe(df, use_container_width=True)
-        
-        # Download Data Button
-        csv = df.to_csv(index=False).encode('utf-8')
-        st.download_button(
-            label="📥 Download Cleaned Features CSV",
-            data=csv,
-            file_name="lahore_aqi_features.csv",
-            mime="text/csv",
-        )
+   
