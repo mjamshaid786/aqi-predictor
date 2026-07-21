@@ -68,7 +68,10 @@ def get_project():
     )
 
 
-@st.cache_resource(show_spinner="Downloading best model from Hopsworks Model Registry...")
+# ----------------------------------------------------------------------------
+# Fixed & Updated load_model() Function
+# ----------------------------------------------------------------------------
+@st.cache_resource(ttl=3600, show_spinner="Downloading best & latest model from Hopsworks Model Registry...")
 def load_model():
     project = get_project()
     mr = project.get_model_registry()
@@ -85,11 +88,28 @@ def load_model():
             f"None of the configured model names were found: {CANDIDATE_MODEL_NAMES}."
         )
 
-    def rmse(m):
-        return m.training_metrics.get("test_rmse", float("inf")) if m.training_metrics else float("inf")
+    # Robust Metric Extractor (checks test_rmse, rmse, RMSE)
+    def extract_rmse(m):
+        if not m.training_metrics:
+            return float("inf")
+        metrics = m.training_metrics
+        for k in ["test_rmse", "rmse", "RMSE"]:
+            if k in metrics:
+                try:
+                    return float(metrics[k])
+                except (ValueError, TypeError):
+                    pass
+        return float("inf")
 
-    has_rmse = any(m.training_metrics and "test_rmse" in m.training_metrics for m in candidates)
-    ordered = sorted(candidates, key=rmse) if has_rmse else sorted(candidates, key=lambda m: -m.version)
+    # Safe Version Extractor
+    def extract_version(m):
+        try:
+            return int(m.version)
+        except (ValueError, TypeError):
+            return 0
+
+    # Sort Priority: 1. Lowest RMSE (Best Performance), 2. Highest Version (Latest Model)
+    ordered = sorted(candidates, key=lambda m: (extract_rmse(m), -extract_version(m)))
 
     errors = []
     for model_meta in ordered:
@@ -100,17 +120,18 @@ def load_model():
             continue
 
         loaded = None
+        # Check Joblib / Pickle
         for fname in ("model.pkl", "model.joblib"):
             fpath = os.path.join(model_dir, fname)
             if os.path.exists(fpath):
                 loaded = joblib.load(fpath)
                 break
 
+        # Check Keras / TensorFlow H5
         if loaded is None:
             h5_path = os.path.join(model_dir, "model.h5")
             if os.path.exists(h5_path):
                 try:
-                    # from tensorflow.keras.models import load_model as keras_load_model
                     loaded = tf.keras.models.load_model(h5_path, compile=False)
                 except Exception as e:
                     errors.append(f"{model_meta.name} v{model_meta.version}: model.h5 load failed ({e})")
