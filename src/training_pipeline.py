@@ -543,12 +543,8 @@ def main():
     success = trainer.run_pipeline()
     
     if success:
-        print("\n🎯 Next Steps:")
-        print("  1. Check Hopsworks UI for registered models")
-        print("  2. Compare model performances")
-        print("  3. Select best model for deployment")
-        print("  4. Create inference pipeline")
-        print("  5. Build Streamlit dashboard")
+        print("\n🎯 Congratulations !")
+        
     else:
         print("\n❌ Training pipeline failed.")
         print("\n💡 Check the error messages above for details.")
