@@ -1,27 +1,3 @@
-"""
-upload_to_hopsworks.py
------------------------
-Uploads the AQI/air-quality dataset (src/data/cleaned_data.csv) to a Hopsworks
-Feature Group, using an API key stored in a local .env file.
-
-Author : (your name)
-Usage  : python upload_to_hopsworks.py
-Env    : requires a `.env` file in the project root with:
-             HOPSWORKS_API_KEY=xxxxxxxxxxxxxxxxxxxx
-             HOPSWORKS_PROJECT=your_project_name      (optional)
-
-Install dependencies:
-    pip install hopsworks pandas python-dotenv
-
-Expected CSV columns (src/data/cleaned_data.csv):
-    timestamp, o3_avg, o3_max, pm10_avg, pm10_max, pm10_min, pm25_avg, pm25_max,
-    pm25_min, uvi_avg, uvi_max, city, hour, day, month, day_of_week, is_weekend,
-    aqi_lag_1, aqi_change_rate, aqi_rolling_mean_3, aqi_target
-
-Primary key: ['city', 'date', 'hour'] -- 'date' and 'hour' are both derived
-from 'timestamp' inside this script so every hourly upload for a given city
-is stored as its own row, rather than overwriting earlier hours in the day.
-"""
 
 from __future__ import annotations
 
