@@ -3,7 +3,6 @@ Lahore Air Quality Index (AQI) Prediction System
 End-to-End Serverless ML Architecture:
 Hopsworks Feature Store + Model Registry + Streamlit Dashboard
 """
-
 import os
 import joblib
 import numpy as np
@@ -13,6 +12,7 @@ import plotly.graph_objects as go
 import streamlit as st
 import hopsworks
 from dotenv import load_dotenv
+import tensorflow as tf
 
 # ----------------------------------------------------------------------------
 # 1. Page Config & Custom Styling
@@ -110,8 +110,8 @@ def load_model():
             h5_path = os.path.join(model_dir, "model.h5")
             if os.path.exists(h5_path):
                 try:
-                    from tensorflow.keras.models import load_model as keras_load_model
-                    loaded = keras_load_model(h5_path, compile=False)
+                    # from tensorflow.keras.models import load_model as keras_load_model
+                    loaded = tf.keras.models.load_model(h5_path, compile=False)
                 except Exception as e:
                     errors.append(f"{model_meta.name} v{model_meta.version}: model.h5 load failed ({e})")
                     continue
