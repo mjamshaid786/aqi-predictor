@@ -76,7 +76,7 @@ class AQICNClient:
         #url Mn Actual City Ka URL Store Ho JayeGa
         params = {"token": self.api_key}
         #Query Parameters Mn Tokken Pass KareinGy Authentication K Liye
-        last_exception: Optional[Exception] = None
+        last_exception: Optional[Exception] = True
         # Jb Code Re-Try Krnay K Baad Bhi Data Fetch Nahi Kr Skay Ga Tu Last Pe
         # Jo Error HoGa Wo Yahan Store Hoga
  
