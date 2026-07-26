@@ -88,7 +88,8 @@ class AQICNClient:
                 response.raise_for_status()
                 # Agr response Mn Koi Error Hoga Tu Code Seedha Exception Pr Chala JayeGa
                 payload = response.json()
-                # Ye Reponse Walay Data Ko Dekhay Ga Andar Kia Hai
+                # Ye Reponse Walay Data Ko Dekhay Ga Andar Kia Hai Aur Simple
+                # dict Mn Change KareGa
                 if payload.get("status") != "ok":
                     raise RuntimeError(f"AQICN status='{payload.get('status')}' for '{city}'")
                 return payload["data"]
