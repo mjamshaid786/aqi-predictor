@@ -84,7 +84,7 @@ class AQICNClient:
         # Ye Loop 3 Baar Try KareGa Jaisay Mene set Kiya Tha Shoro Mn...
             try:
                 response = requests.get(url, params=params, timeout=REQUEST_TIMEOUT_SECONDS)
-                # Data K Liye Request Send Ki Hai Timeout K Sath
+                # Data K Liye Request Send Ki Hai Timeout K Sath.
                 response.raise_for_status()
                 # Agr response Mn Koi Error Hoga Tu Code Seedha Exception Pr Chala JayeGa
                 payload = response.json()
