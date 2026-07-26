@@ -44,13 +44,20 @@ RETRY_BACKOFF_SECONDS = 2
 # (Yahan 2 Mtlb 2 Seconds Aur Oper K Code Mn Bhi Same Seconds Format Hoga)
 
 def load_environment() -> Dict[str, Optional[str]]:
+#Ye Function .env Se Environmental  Vairaables Load Krta Hai Aur UnKo Dict. Form Return Krta Hai
     load_dotenv(find_dotenv())
+    #find_donenv() project mn .env file search krta hai
+    #load_dotenv() ye usay python k environmental variaables mn load krta hai
+    #Ta K os.getenv() UsKo Use Kr Skay
  
     aqicn_key = os.getenv("AQICN_API_KEY")
+    #Ye Us Environment Se "AQICN_API_KEY" Variable Ka Samnay Ji API Key Hogi Read KryGa
     if not aqicn_key:
         raise RuntimeError("AQICN_API_KEY is missing from .env")
+    #Agr API Key Nahi Milti Tu Error Show Hoga
  
     return {"aqicn_key": aqicn_key}
+    #Agr Mil Gai Tu Dict. Ki Form Mn Return Ho JayeGi
  
  
 class AQICNClient:
