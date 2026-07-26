@@ -68,7 +68,7 @@ class AQICNClient:
 # Ye Class API Se Data Fetch Krnay K Liye Hai...
     def __init__(self, api_key: str):
         self.api_key = api_key
-        # API Key Ko Instance Variable Mn Store Kr Rahe Hain.
+        # API Key Ko Instance Variable Mn Store Kr Rahe Hain..
  
     def fetch_city_feed(self, city: str) -> Dict[str, Any]:
     #Ye Method Humari City Ka Data Fetch KareGa
