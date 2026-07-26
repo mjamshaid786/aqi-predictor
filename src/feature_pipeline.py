@@ -78,7 +78,7 @@ class AQICNClient:
         #Query Parameters Mn Tokken Pass KareinGy Authentication K Liye.
         last_exception: Optional[Exception] = None
         # Jb Code Re-Try Krnay K Baad Bhi Data Fetch Nahi Kr Skay Ga Tu Last Pe
-        # Jo Error HoGa Wo Yahan Store Hoga
+        # Jo Error HoGa Wo Yahan Store Hoga.
  
         for attempt in range(1, MAX_RETRIES + 1):
         # Ye Loop 3 Baar Try KareGa Jaisay Mene set Kiya Tha Shoro Mn...
