@@ -38,7 +38,11 @@ MAX_RETRIES = 3
 RETRY_BACKOFF_SECONDS = 2 
 # Fail Honay K Baad Kitni Der Wait Kr K Dobara Try Krna Hai 
 # (Yahan 2 Mtlb 2 Seconds Aur Oper K Code Mn Bhi Same Seconds Format Hoga)
-
+'''
+==================================================
+        SETTING API KEY FOR FETCHING DATA
+==================================================
+'''
 def load_environment() -> Dict[str, Optional[str]]:
 #Ye Function .env Se Environmental  Vairaables Load Krta Hai Aur UnKo Dict. Form Return Krta Hai
     load_dotenv(find_dotenv())
@@ -54,7 +58,11 @@ def load_environment() -> Dict[str, Optional[str]]:
  
     return {"aqicn_key": aqicn_key}
     #Agr Mil Gai Tu Dict. Ki Form Mn Return Ho JayeGi
- 
+'''
+==============================
+        FETCHING DATA
+==============================
+'''
  
 class AQICNClient:
 # Ye Class API Se Data Fetch Krnay K Liye Hai..
@@ -63,15 +71,24 @@ class AQICNClient:
         # API Key Ko Instance Variable Mn Store Kr Rahe Hain.
  
     def fetch_city_feed(self, city: str) -> Dict[str, Any]:
+    #Ye Method Humari City Ka Data Fetch KareGa
         url = AQICN_BASE_URL.format(city=city)
+        #url Mn Actual City Ka URL Store Ho JayeGa
         params = {"token": self.api_key}
+        #Query Parameters Mn Tokken Pass KareinGy Authentication K Liye
         last_exception: Optional[Exception] = None
+        # Jb Code Re-Try Krnay K Baad Bhi Data Fetch Nahi Kr Skay Ga Tu Last Pe
+        # Jo Error HoGa Wo Yahan Store Hoga
  
         for attempt in range(1, MAX_RETRIES + 1):
+        # Ye Loop 3 Baar Try KareGa Jaisay Mene set Kiya Tha Shoro Mn
             try:
                 response = requests.get(url, params=params, timeout=REQUEST_TIMEOUT_SECONDS)
+                # Data K Liye Request Send Ki Hai Timeout K Sath
                 response.raise_for_status()
+                # Agr response Mn Koi Error Hoga Tu Code Seedha Exception Pr Chala JayeGa
                 payload = response.json()
+                # Ye Reponse Walay Data Ko Dekhay Ga Andar Kia Hai
                 if payload.get("status") != "ok":
                     raise RuntimeError(f"AQICN status='{payload.get('status')}' for '{city}'")
                 return payload["data"]
@@ -84,6 +101,8 @@ class AQICNClient:
         raise RuntimeError(f"[{city}] All attempts failed: {last_exception}")
  
     def fetch_many(self, cities: List[str]) -> Dict[str, Dict[str, Any]]:
+    #Ye Function Multiple Cities Ka Data Fetch KareGa Aur Har City K Data K Liye
+    # fetch_city_feed Wala Function Call Hoga
         feeds: Dict[str, Dict[str, Any]] = {}
         for city in cities:
             try:
