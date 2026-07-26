@@ -25,9 +25,6 @@ from dotenv import load_dotenv, find_dotenv
 -----------------------------------------------             
 '''
 PROJECT_ROOT = Path(__file__).resolve().parent # EsSe Root Folder Select Ho JayeGa Ta K Baqi Paths Ko EsKy Relative Bna Sakein
-LOG_DIR = PROJECT_ROOT / "logs"            # Root Folder K Andar logs Naam Ke Folder Ka Path Bana Rahe Hain
-LOG_DIR.mkdir(parents=True, exist_ok=True) # Ye Dekhay Ga Agr Pehly Se Folder Hai Tu Koi Msla Nahi Lkn Nahi Hai Tu Bna DeGa
-LOG_FILE_PATH = LOG_DIR / "aqi_pipeline.log" #Ye Actual log File Ka Path Aur FileName Jahan Logs Store Hongey.
 
 OUTPUT_DIR = PROJECT_ROOT / "data"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True) #data Naam Ka Folder Jahan Hum Data Fetch Kr K Store KareinGy...
