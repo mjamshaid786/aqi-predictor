@@ -24,16 +24,24 @@ from dotenv import load_dotenv, find_dotenv
             SETTING PROJECT BASIC PATHS
 -----------------------------------------------             
 '''
-PROJECT_ROOT = Path(__file__).resolve().parent # EsSe Root Folder Select Ho JayeGa Ta K Baqi Paths Ko EsKy Relative Bna Sakein
+PROJECT_ROOT = Path(__file__).resolve().parent 
+# EsSe Root Folder Select Ho JayeGa Ta K Baqi Paths Ko EsKy Relative Bna Sakein
 
 OUTPUT_DIR = PROJECT_ROOT / "data"
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True) #data Naam Ka Folder Jahan Hum Data Fetch Kr K Store KareinGy...
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True) 
+#data Naam Ka Folder Jahan Hum Data Fetch Kr K Store KareinGy...
 
-DEFAULT_CITIES: List[str] = ["lahore"] # Yahan Hum Un Cities K List Add Krtay Hain JinKa Data Hum Ne Fetch Krna Ho
-AQICN_BASE_URL = "https://api.waqi.info/feed/{city}/" # Ye AQICN Se API Ki Help Se Humaray City Ka Data Nikalay Gi
-REQUEST_TIMEOUT_SECONDS = 15 #Agr 15 Seconde Tk Wait KareGa HTTP K Response Ka
-MAX_RETRIES = 3 #Agr API Call Fail Ho Jaye Tu 3 Baar Koshish Krni Hai
-RETRY_BACKOFF_SECONDS = 2 # Fail Honay K Baad Kitni Der Wait Kr K Dobara Try Krna Hai (Yahan 2 Mtlb 2 Seconds Aur Oper K Code Mn Bhi Same Seconds Format Hoga)
+DEFAULT_CITIES: List[str] = ["lahore"] 
+# Yahan Hum Un Cities K List Add Krtay Hain JinKa Data Hum Ne Fetch Krna Ho
+AQICN_BASE_URL = "https://api.waqi.info/feed/{city}/" 
+# Ye AQICN Se API Ki Help Se Humaray City Ka Data Nikalay Gi
+REQUEST_TIMEOUT_SECONDS = 15 
+#Agr 15 Seconde Tk Wait KareGa HTTP K Response Ka
+MAX_RETRIES = 3 
+#Agr API Call Fail Ho Jaye Tu 3 Baar Koshish Krni Hai
+RETRY_BACKOFF_SECONDS = 2 
+# Fail Honay K Baad Kitni Der Wait Kr K Dobara Try Krna Hai 
+# (Yahan 2 Mtlb 2 Seconds Aur Oper K Code Mn Bhi Same Seconds Format Hoga)
 
 def load_environment() -> Dict[str, Optional[str]]:
     load_dotenv(find_dotenv())
