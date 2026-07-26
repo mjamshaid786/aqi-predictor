@@ -65,7 +65,7 @@ def load_environment() -> Dict[str, Optional[str]]:
 '''
  
 class AQICNClient:
-# Ye Class API Se Data Fetch Krnay K Liye Hai..
+# Ye Class API Se Data Fetch Krnay K Liye Hai...
     def __init__(self, api_key: str):
         self.api_key = api_key
         # API Key Ko Instance Variable Mn Store Kr Rahe Hain.
