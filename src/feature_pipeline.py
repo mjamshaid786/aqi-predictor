@@ -47,26 +47,25 @@ def configure_logging() -> logging.Logger:
     logger = logging.getLogger("aqi_pipeline") #Es Naam Ki File BanaGi Agr Pehlay Se Hai Tu Wohi Use Hogi
     logger.setLevel(logging.DEBUG) # Basic Level DEBUG  Set Kiya Ta K Detailed Msgs Bhi Records Hoon
     if logger.handlers:
-        return logger
+        return logger # Agr Ye Fuction Dobara Call Ho TU Handlers Duplicate Nahi HonGey
 
     formatter = logging.Formatter(
         fmt="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler(sys.stdout) #Ye Handler Msg Terminal Mn Print KareGa...
+    console_handler.setLevel(logging.INFO) #Terminal Mn INFO, ERROR, CRITICAL, WARINING Show Hoga Debug Show Nahi Hoga
     console_handler.setFormatter(formatter)
 
     file_handler = logging.handlers.RotatingFileHandler(
         filename=str(LOG_FILE_PATH), maxBytes=5 * 1024 * 1024, backupCount=3, encoding="utf-8",
-    )
+    ) #Ye Handler log File Mn Logs LikheGa, Maximum 5Mb Ki File BaneGi UsKy Baad New File Bn JayeGi Aur Purani Backup Mn Chali JayeGi, Backup Mn Ziyada Se Ziyada 3 Files Jayeingi, Encoding Mtlb Emojies Agr Hoon Tu UnKo Bhi Lkho
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(formatter)
-
     logger.addHandler(console_handler)
-    logger.addHandler(file_handler)
-    return logger
+    logger.addHandler(file_handler) #Console Aur FileHandler Ko Attach Kr Diya Hai
+    return logger # Configered Logger Wapis Bheja Ta K Baqi Code Mn Use Ho Skay.
 
 
 class StepTracker:
