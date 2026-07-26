@@ -73,7 +73,7 @@ class AQICNClient:
     def fetch_city_feed(self, city: str) -> Dict[str, Any]:
     #Ye Method Humari City Ka Data Fetch KareGa.
         url = AQICN_BASE_URL.format(city=city)
-        #url Mn Actual City Ka URL Store Ho JayeGa
+        #url Mn Actual City Ka URL Store Ho JayeGa.
         params = {"token": self.api_key}
         #Query Parameters Mn Tokken Pass KareinGy Authentication K Liye
         last_exception: Optional[Exception] = None
