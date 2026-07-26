@@ -1,6 +1,7 @@
-'''================================================
+'''
+==================================================
             IMPORTING REQUIRED LIBRARIES
-   ================================================
+==================================================
 '''
 import os
 import sys
@@ -18,25 +19,33 @@ import numpy as np
 import pandas as pd
 from dotenv import load_dotenv, find_dotenv
 
-
-PROJECT_ROOT = Path(__file__).resolve().parent
-LOG_DIR = PROJECT_ROOT / "logs"
-LOG_DIR.mkdir(parents=True, exist_ok=True)
-LOG_FILE_PATH = LOG_DIR / "aqi_pipeline.log"
+'''
+-----------------------------------------------
+            SETTING PROJECT BASIC PATHS
+-----------------------------------------------             
+'''
+PROJECT_ROOT = Path(__file__).resolve().parent # EsSe Root Folder Select Ho JayeGa Ta K Baqi Paths Ko EsKy Relative Bna Sakein
+LOG_DIR = PROJECT_ROOT / "logs"            # Root Folder K Andar logs Naam Ke Folder Ka Path Bana Rahe Hain
+LOG_DIR.mkdir(parents=True, exist_ok=True) # Ye Dekhay Ga Agr Pehly Se Folder Hai Tu Koi Msla Nahi Lkn Nahi Hai Tu Bna DeGa
+LOG_FILE_PATH = LOG_DIR / "aqi_pipeline.log" #Ye Actual log File Ka Path Aur FileName Jahan Logs Store Hongey.
 
 OUTPUT_DIR = PROJECT_ROOT / "data"
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True) #data Naam Ka Folder Jahan Hum Data Fetch Kr K Store KareinGy...
 
-DEFAULT_CITIES: List[str] = ["lahore"]
-AQICN_BASE_URL = "https://api.waqi.info/feed/{city}/"
-REQUEST_TIMEOUT_SECONDS = 15
-MAX_RETRIES = 3
-RETRY_BACKOFF_SECONDS = 2
+DEFAULT_CITIES: List[str] = ["lahore"] # Yahan Hum Un Cities K List Add Krtay Hain JinKa Data Hum Ne Fetch Krna Ho
+AQICN_BASE_URL = "https://api.waqi.info/feed/{city}/" # Ye AQICN Se API Ki Help Se Humaray City Ka Data Nikalay Gi
+REQUEST_TIMEOUT_SECONDS = 15 #Agr 15 Seconde Tk Wait KareGa HTTP K Response Ka
+MAX_RETRIES = 3 #Agr API Call Fail Ho Jaye Tu 3 Baar Koshish Krni Hai
+RETRY_BACKOFF_SECONDS = 2 # Fail Honay K Baad Kitni Der Wait Kr K Dobara Try Krna Hai (Yahan 2 Mtlb 2 Seconds Aur Oper K Code Mn Bhi Same Seconds Format Hoga)
 
-
+'''
+====================================
+        SETTING LOGGER SETTINGS
+====================================
+'''
 def configure_logging() -> logging.Logger:
-    logger = logging.getLogger("aqi_pipeline")
-    logger.setLevel(logging.DEBUG)
+    logger = logging.getLogger("aqi_pipeline") #Es Naam Ki File BanaGi Agr Pehlay Se Hai Tu Wohi Use Hogi
+    logger.setLevel(logging.DEBUG) # Basic Level DEBUG  Set Kiya Ta K Detailed Msgs Bhi Records Hoon
     if logger.handlers:
         return logger
 
