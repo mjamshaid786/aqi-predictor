@@ -5,10 +5,6 @@
 '''
 import os
 import sys
-import time
-import logging
-import logging.handlers
-import traceback
 from pathlib import Path
 from datetime import datetime, timezone
 from contextlib import contextmanager
@@ -61,8 +57,10 @@ def load_environment() -> Dict[str, Optional[str]]:
  
  
 class AQICNClient:
+# Ye Class API Se Data Fetch Krnay K Liye Hai..
     def __init__(self, api_key: str):
         self.api_key = api_key
+        # API Key Ko Instance Variable Mn Store Kr Rahe Hain.
  
     def fetch_city_feed(self, city: str) -> Dict[str, Any]:
         url = AQICN_BASE_URL.format(city=city)
