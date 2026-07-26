@@ -103,7 +103,7 @@ class AQICNClient:
     def fetch_many(self, cities: List[str]) -> Dict[str, Dict[str, Any]]:
     #Ye Function Multiple Cities Ka Data Fetch KareGa Aur Har City K Data K Liye
     # fetch_city_feed Wala Function Call Hoga
-        feeds: Dict[str, Dict[str, Any]] = []
+        feeds: Dict[str, Dict[str, Any]] = {}
         for city in cities:
             try:
                 feeds[city] = self.fetch_city_feed(city)
