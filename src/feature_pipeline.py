@@ -71,7 +71,7 @@ class AQICNClient:
         # API Key Ko Instance Variable Mn Store Kr Rahe Hain..
  
     def fetch_city_feed(self, city: str) -> Dict[str, Any]:
-    #Ye Method Humari City Ka Data Fetch KareGa
+    #Ye Method Humari City Ka Data Fetch KareGa.
         url = AQICN_BASE_URL.format(city=city)
         #url Mn Actual City Ka URL Store Ho JayeGa
         params = {"token": self.api_key}
