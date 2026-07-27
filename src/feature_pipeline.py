@@ -114,7 +114,9 @@ class AQICNClient:
  
  
 class FeatureEngineer:
+#Ye Class AQICN Se Fetch Kiye Data Ko Desired Format Mn Change KareyGi (Columns)
     def build_city_dataframe(self, city: str, feed: Dict[str, Any]) -> pd.DataFrame:
+    # Ye Method Data Ko Dict. Se Pandas K DataFrame Mn Convert KareGi
         forecast_block = feed.get("forecast", {}).get("daily", {})
         if not forecast_block:
             return pd.DataFrame()
