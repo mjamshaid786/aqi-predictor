@@ -153,7 +153,7 @@ class FeatureEngineer:
  
         merged = pd.concat(pollutant_frames, axis=1, join="outer").reset_index()
         # Sab pollutants Ke DataFrames Ko columns Ki Tarah (axis=1) side by
-        # side Jor rahe hain, "outer" join se koi bhi date miss nahi hoga.
+        # side Jor Rahe hain, "outer" join se koi bhi date miss nahi hoga.
         # reset_index() se "date" wapis normal column ban jata hai.
         merged["city"] = city
         # Naya Column city Add Kiya Hai Tak Har Row Mn City Ka Naam Save Ho Skay.
