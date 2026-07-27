@@ -154,6 +154,8 @@ class FeatureEngineer:
         merged["city"] = city
         # Naya Column city Add Kiya Hai Tak Har Row Mn City Ka Naam Save Ho Skay.
         merged["station_latitude"] = feed.get("city", {}).get("geo", [np.nan, np.nan])[0]
+        # Feed K AndarSe Monitoring Station Ki latitude Nikal Kar Naye
+        # Column Mein Daal Rahe Hain (agar geo data na ho to NaN).
         merged["station_longitude"] = feed.get("city", {}).get("geo", [np.nan, np.nan])[1]
         merged["dominant_pollutant"] = feed.get("dominentpol", np.nan)
         merged["current_overall_aqi"] = feed.get("aqi", np.nan)
