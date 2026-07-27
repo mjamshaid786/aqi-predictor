@@ -140,9 +140,12 @@ class FeatureEngineer:
             # day column(str) Ko Proper datetime format Mn Convert Kr K date Mn Store Hoga
             df_pollutant = df_pollutant.drop(columns=["day"])
             pollutant_frames.append(df_pollutant.set_index("date"))
+            #date ko index bna Kr EsKo List Mn Add KareGa Ta K 
+            #Fr Baad Mn date K Hissab Se Merge Kr Skein
  
         if not pollutant_frames:
             return pd.DataFrame()
+            # Agr Koi Valid Pollutant Frame Nahi Bna Tu Khali DataFrame Return Ho JayeGa
  
         merged = pd.concat(pollutant_frames, axis=1, join="outer").reset_index()
         merged["city"] = city
