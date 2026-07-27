@@ -154,7 +154,7 @@ class FeatureEngineer:
         merged = pd.concat(pollutant_frames, axis=1, join="outer").reset_index()
         # Sab pollutants Ke DataFrames Ko columns Ki Tarah (axis=1) side by
         # side Jor Rahe Hain, "outer" join Se Koi Bhi date Miss Nahi Hoga.
-        # reset_index() se "date" wapis normal column ban jata hai.
+        # reset_index() Se "date" wapis normal column ban jata hai.
         merged["city"] = city
         # Naya Column city Add Kiya Hai Tak Har Row Mn City Ka Naam Save Ho Skay.
         merged["station_latitude"] = feed.get("city", {}).get("geo", [np.nan, np.nan])[0]
