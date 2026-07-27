@@ -125,14 +125,19 @@ class FeatureEngineer:
             #Agr Forecast Wala Data Khali Hai Tu Khali DataFrame Return KarenGy.
  
         pollutant_frames = []
+        # Har Pollutant Ka Chhota dataFrame Yahan Jama Hoga
         for pollutant_name, daily_readings in forecast_block.items():
             if not isinstance(daily_readings, list):
                 continue
+            # Agr Daily Reading Dict. Format Mn Nahi Hai Tu Skip Ho JayeGa
             df_pollutant = pd.DataFrame(daily_readings)
             df_pollutant = df_pollutant.rename(columns={
                 "avg": f"{pollutant_name}_avg", "max": f"{pollutant_name}_max", "min": f"{pollutant_name}_min",
             })
+            # Column Ko Rename Kr Rahe Hain Ta K Jb Sb Pollutants Merge Hoon Tu
+            # Column Class Na Ho Jaye
             df_pollutant["date"] = pd.to_datetime(df_pollutant["day"])
+            # day column(str) Ko Proper datetime format Mn Convert Kr K date Mn Store Hoga
             df_pollutant = df_pollutant.drop(columns=["day"])
             pollutant_frames.append(df_pollutant.set_index("date"))
  
