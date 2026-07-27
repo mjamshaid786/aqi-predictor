@@ -118,6 +118,8 @@ class FeatureEngineer:
     def build_city_dataframe(self, city: str, feed: Dict[str, Any]) -> pd.DataFrame:
     # Ye Method Data Ko Dict. Se Pandas K DataFrame Mn Convert KareGi
         forecast_block = feed.get("forecast", {}).get("daily", {})
+        # Feed Se Daily Forcast Wala Hissa NikalyGa Jaisa K pm25, pm10 etc
+        # Agr Kuch Nahi Milta Tu Khali Dict MileGi.
         if not forecast_block:
             return pd.DataFrame()
  
