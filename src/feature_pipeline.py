@@ -158,6 +158,8 @@ class FeatureEngineer:
         # Column Mein Daal Rahe Hain (agar geo data na ho to NaN).
         merged["station_longitude"] = feed.get("city", {}).get("geo", [np.nan, np.nan])[1]
         merged["dominant_pollutant"] = feed.get("dominentpol", np.nan)
+        # Feed se "dominentpol" (Sab Se Ziyada Asar Dalne Wala Pollutant)
+        # Nikal Kar Column Mein Daal Rahe Hain.
         merged["current_overall_aqi"] = feed.get("aqi", np.nan)
         return merged
  
