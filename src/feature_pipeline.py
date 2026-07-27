@@ -152,7 +152,7 @@ class FeatureEngineer:
             # Agr Koi Valid Pollutant Frame Nahi Bna Tu Khali DataFrame Return Ho JayeGa.
  
         merged = pd.concat(pollutant_frames, axis=1, join="outer").reset_index()
-        # Sab pollutants Ke DataFrames Ko columns Ki tarah (axis=1) side by
+        # Sab pollutants Ke DataFrames Ko columns Ki Tarah (axis=1) side by
         # side jorh rahe hain, "outer" join se koi bhi date miss nahi hoga.
         # reset_index() se "date" wapis normal column ban jata hai.
         merged["city"] = city
