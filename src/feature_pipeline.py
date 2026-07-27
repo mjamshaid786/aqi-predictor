@@ -161,6 +161,7 @@ class FeatureEngineer:
         # Feed se "dominentpol" (Sab Se Ziyada Asar Dalne Wala Pollutant)
         # Nikal Kar Column Mein Daal Rahe Hain.
         merged["current_overall_aqi"] = feed.get("aqi", np.nan)
+        # Feed Se Current Overall AQI Value Nikal Kar Column Mein Daal Dega
         return merged
  
     def add_time_based_features(self, df: pd.DataFrame) -> pd.DataFrame:
