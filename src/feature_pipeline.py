@@ -141,7 +141,7 @@ class FeatureEngineer:
             # Column Ko Rename Kr Rahe Hain Ta K Jb Sb Pollutants Merge Hoon Tu
             # Column Class Na Ho Jaye
             df_pollutant["date"] = pd.to_datetime(df_pollutant["day"])
-            # day column(str) Ko Proper datetime format Mn Convert Kr K date Mn Store Hoga
+            # day column(str) Ko Proper datetime format Mn Convert Kr K date Mn Store Hoga.
             df_pollutant = df_pollutant.drop(columns=["day"])
             pollutant_frames.append(df_pollutant.set_index("date"))
             #date ko index bna Kr EsKo List Mn Add KareGa Ta K 
