@@ -133,7 +133,7 @@ class FeatureEngineer:
         for pollutant_name, daily_readings in forecast_block.items():
             if not isinstance(daily_readings, list):
                 continue
-            # Agr Daily Reading Dict. Format Mn Nahi Hai Tu Skip Ho JayeGa
+            # Agr Daily Reading Dict. Format Mn Nahi Hai Tu Skip Ho JayeGa.
             df_pollutant = pd.DataFrame(daily_readings)
             df_pollutant = df_pollutant.rename(columns={
                 "avg": f"{pollutant_name}_avg", "max": f"{pollutant_name}_max", "min": f"{pollutant_name}_min",
