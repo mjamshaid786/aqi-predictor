@@ -219,7 +219,7 @@ class FeatureEngineer:
         grouped = df.groupby("city", group_keys=False)
         df["aqi_target"] = grouped[value_col].shift(-1)
         # Har city Ke Andar "Agle Din" Ki Value_col Value Nikal Kar
-        # "aqi_target" column bana rahe hain — yeh future value hai jo
+        # "aqi_target" column Bana Rahe Hain — Ye Future Value Hai Jo
         # model ne predict karni hai (shift(-1) matlab ek row upar se value
         # le rahe hain).
         return df
