@@ -176,6 +176,9 @@ class FeatureEngineer:
         df["month"] = df["date"].dt.month
         df["day_of_week"] = df["date"].dt.dayofweek
         df["is_weekend"] = df["day_of_week"].isin([5, 6]).astype(int)
+        # Agar day_of_week 5 (Saturday) ya 6 (Sunday) hai to True, warna
+        # False — phir isay 1/0 integer mein convert kar rahe hain, taake
+        # yeh weekend indicator feature ban sake.
         return df
  
     def add_derived_features(self, df: pd.DataFrame, value_col: str = "pm25_avg") -> pd.DataFrame:
