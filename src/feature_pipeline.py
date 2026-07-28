@@ -190,6 +190,9 @@ class FeatureEngineer:
         # rahe hain — is se lag/rolling features sahi order mein calculate
         # hongi. reset_index taake naya clean index mil jaye.
         grouped = df.groupby("city", group_keys=False)
+        # Data ko city ke hisab se group kar rahe hain, taake har city ka
+        # data alag se process ho (ek city ka lag doosri city ke data se
+        # mix na ho). group_keys=False result ko flat rakhta hai.
  
         df["aqi_lag_1"] = grouped[value_col].shift(1)
         df["aqi_change_rate"] = ((df[value_col] - df["aqi_lag_1"]) / df["aqi_lag_1"].replace(0, np.nan)) * 100.0
