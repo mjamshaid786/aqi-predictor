@@ -186,6 +186,9 @@ class FeatureEngineer:
         # derived (nikali hui) features banata hai.
         df = df.copy()
         df = df.sort_values(["city", "date"]).reset_index(drop=True)
+        # Data ko pehlay city ke hisab se, phir date ke hisab se sort kar
+        # rahe hain — is se lag/rolling features sahi order mein calculate
+        # hongi. reset_index taake naya clean index mil jaye.
         grouped = df.groupby("city", group_keys=False)
  
         df["aqi_lag_1"] = grouped[value_col].shift(1)
