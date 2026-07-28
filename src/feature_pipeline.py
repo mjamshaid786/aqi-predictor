@@ -239,7 +239,7 @@ class FeatureEngineer:
  
         combined = pd.concat(per_city_frames, ignore_index=True)
         # Sab cities Ke DataFrames Ko rows Ki Tarah (Ek Ke Neeche Ek) Jor
-        # kar ek combined DataFrame bana rahe hain. ignore_index=True se
+        # Kar Ek combined DataFrame bana rahe hain. ignore_index=True se
         # naya clean index milega.
         combined = self.add_time_based_features(combined)
         combined = self.add_derived_features(combined, value_col="pm25_avg")
