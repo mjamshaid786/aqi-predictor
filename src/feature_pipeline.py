@@ -195,6 +195,9 @@ class FeatureEngineer:
         # mix na ho). group_keys=False result ko flat rakhta hai.
  
         df["aqi_lag_1"] = grouped[value_col].shift(1)
+        # Har city ke andar value_col (jaise pm25_avg) ki 1 din pehlay wali
+        # value nikal kar naya column "aqi_lag_1" bana rahe hain (lag
+        # feature).
         df["aqi_change_rate"] = ((df[value_col] - df["aqi_lag_1"]) / df["aqi_lag_1"].replace(0, np.nan)) * 100.0
         df["aqi_rolling_mean_3"] = grouped[value_col].transform(lambda s: s.rolling(window=3, min_periods=1).mean())
         return df
