@@ -182,6 +182,8 @@ class FeatureEngineer:
         return df
  
     def add_derived_features(self, df: pd.DataFrame, value_col: str = "pm25_avg") -> pd.DataFrame:
+        # Yeh method lag, percentage change, aur rolling average jaisi
+        # derived (nikali hui) features banata hai.
         df = df.copy()
         df = df.sort_values(["city", "date"]).reset_index(drop=True)
         grouped = df.groupby("city", group_keys=False)
