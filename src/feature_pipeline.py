@@ -221,7 +221,7 @@ class FeatureEngineer:
         # Har city Ke Andar "Agle Din" Ki Value_col Value Nikal Kar
         # "aqi_target" column Bana Rahe Hain — Ye Future Value Hai Jo
         # Model Ne predict Karni Hai (shift(-1) Matlab Ek row Upar Se Value
-        # le rahe hain).
+        # Le Rahe Hain).
         return df
  
     def build_feature_table(self, feeds: Dict[str, Dict[str, Any]]) -> pd.DataFrame:
