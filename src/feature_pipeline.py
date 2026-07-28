@@ -218,6 +218,10 @@ class FeatureEngineer:
         df = df.copy()
         grouped = df.groupby("city", group_keys=False)
         df["aqi_target"] = grouped[value_col].shift(-1)
+        # Har city ke andar "agle din" ki value_col value nikal kar
+        # "aqi_target" column bana rahe hain — yeh future value hai jo
+        # model ne predict karni hai (shift(-1) matlab ek row upar se value
+        # le rahe hain).
         return df
  
     def build_feature_table(self, feeds: Dict[str, Dict[str, Any]]) -> pd.DataFrame:
