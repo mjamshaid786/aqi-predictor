@@ -246,7 +246,7 @@ class FeatureEngineer:
         combined = self.add_target(combined, value_col="pm25_avg")
         combined["ingested_at"] = pd.Timestamp(datetime.now(timezone.utc))
         # Ek column add Kar Rahe Hain Jismein Ye record Hoga Ke Ye data
-        # Kis waqt (UTC mein) fetch/process kiya gaya.
+        # Kis Waqt (UTC mein) fetch/process kiya gaya.
  
         combined = combined.dropna(subset=["aqi_target"]).reset_index(drop=True)
         # Un rows ko hata rahe hain jinka "aqi_target" khali (NaN) hai —
