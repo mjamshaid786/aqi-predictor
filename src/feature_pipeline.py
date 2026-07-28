@@ -230,6 +230,7 @@ class FeatureEngineer:
         per_city_frames = []
         for city, feed in feeds.items():
             city_df = self.build_city_dataframe(city, feed)
+            # Us city ka raw feed clean DataFrame mein convert kar rahe hain.
             if not city_df.empty:
                 per_city_frames.append(city_df)
  
@@ -237,6 +238,9 @@ class FeatureEngineer:
             raise RuntimeError("No usable AQICN data returned for any city.")
  
         combined = pd.concat(per_city_frames, ignore_index=True)
+        # Sab cities ke DataFrames ko rows ki tarah (ek ke neeche ek) jorh
+        # kar ek combined DataFrame bana rahe hain. ignore_index=True se
+        # naya clean index milega.
         combined = self.add_time_based_features(combined)
         combined = self.add_derived_features(combined, value_col="pm25_avg")
         combined = self.add_target(combined, value_col="pm25_avg")
