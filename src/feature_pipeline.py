@@ -225,7 +225,7 @@ class FeatureEngineer:
         return df
  
     def build_feature_table(self, feeds: Dict[str, Dict[str, Any]]) -> pd.DataFrame:
-    # Yeh method sab cities ke feeds ko le kar ek final, ML-ready
+    # Yeh method Sab cities ke feeds ko le kar ek final, ML-ready
     # feature table banata hai.
         per_city_frames = []
         for city, feed in feeds.items():
