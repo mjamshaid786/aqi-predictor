@@ -199,6 +199,9 @@ class FeatureEngineer:
         # value nikal kar naya column "aqi_lag_1" bana rahe hain (lag
         # feature).
         df["aqi_change_rate"] = ((df[value_col] - df["aqi_lag_1"]) / df["aqi_lag_1"].replace(0, np.nan)) * 100.0
+        # Aaj ki value aur pichlay din ki value ke darmiyan percentage
+        # change calculate kar rahe hain. Agar lag value 0 ho to usay NaN
+        # se replace kar rahe hain taake division-by-zero error na aaye.
         df["aqi_rolling_mean_3"] = grouped[value_col].transform(lambda s: s.rolling(window=3, min_periods=1).mean())
         return df
  
