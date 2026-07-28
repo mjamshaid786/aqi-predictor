@@ -230,7 +230,7 @@ class FeatureEngineer:
         per_city_frames = []
         for city, feed in feeds.items():
             city_df = self.build_city_dataframe(city, feed)
-            # Us city ka raw feed clean DataFrame mein convert kar rahe hain.
+            # Us city Ka raw feed clean DataFrame mein convert kar rahe hain.
             if not city_df.empty:
                 per_city_frames.append(city_df)
  
