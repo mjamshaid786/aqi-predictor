@@ -207,7 +207,11 @@ class FeatureEngineer:
         # rahe hain (min_periods=1 matlab shuru ke 1-2 din bhi average mil
         # jayega, jitna data available ho usi se).
         return df
- 
+    '''
+    ===============================================================
+            SETTING REQUIREN COLUMNS FOR MACHINE LEARNING
+    ===============================================================
+    ''' 
     def add_target(self, df: pd.DataFrame, value_col: str = "pm25_avg") -> pd.DataFrame:
         df = df.copy()
         grouped = df.groupby("city", group_keys=False)
