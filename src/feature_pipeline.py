@@ -262,7 +262,7 @@ def main() -> int:
     print("Step: Loading environment variables...")
     env_vars = load_environment()
     # Environment variables load Karne Wala step — critical=True Matlab
-    # Agar Ye fail Ho To Poora program Yahin Ruk jayega (aage jane ka koi
+    # Agar Ye fail Ho To Poora program Yahin Ruk Jayega (aage jane ka koi
     # faida nahi kyunki API key ke baghair kuch nahi ho sakta).
  
     print("Step: Fetching raw AQI data from AQICN...")
