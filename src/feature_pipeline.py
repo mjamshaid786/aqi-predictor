@@ -203,7 +203,7 @@ class FeatureEngineer:
         # change calculate kar rahe hain. Agar lag value 0 ho to usay NaN
         # se replace kar rahe hain taake division-by-zero error na aaye.
         df["aqi_rolling_mean_3"] = grouped[value_col].transform(lambda s: s.rolling(window=3, min_periods=1).mean())
-        # Har City ke andar 3-din ka moving/rolling average calculate kar
+        # Har City Ke andar 3-din ka moving/rolling average calculate kar
         # rahe hain (min_periods=1 matlab shuru ke 1-2 din bhi average mil
         # jayega, jitna data available ho usi se).
         return df
