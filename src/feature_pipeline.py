@@ -218,7 +218,7 @@ class FeatureEngineer:
         df = df.copy()
         grouped = df.groupby("city", group_keys=False)
         df["aqi_target"] = grouped[value_col].shift(-1)
-        # Har city Ke Andar "Agle Din" Ki Value_col Value Nikal Kar
+        # Har City Ke Andar "Agle Din" Ki Value_col Value Nikal Kar
         # "aqi_target" column Bana Rahe Hain — Ye Future Value Hai Jo
         # Model Ne Predict Karni Hai (shift(-1) Matlab Ek row Upar Se Value
         # Le Rahe Hain).
