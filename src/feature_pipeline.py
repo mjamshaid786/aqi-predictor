@@ -261,7 +261,7 @@ def main() -> int:
  
     print("Step: Loading environment variables...")
     env_vars = load_environment()
-    # Environment Variables Load Karne Wala step — critical=True Matlab
+    # Environment Variables Load Karne Wala Step — critical=True Matlab
     # Agar Ye fail Ho To Poora program Yahin Ruk Jayega (Aage Jane Ka Koi
     # Faida Nahi Kyunki API key Ke Baghair Kuch Nahi Ho Sakta).
  
