@@ -249,7 +249,7 @@ class FeatureEngineer:
         # Kis Waqt (UTC Mein) fetch/process Kiya Gaya.
  
         combined = combined.dropna(subset=["aqi_target"]).reset_index(drop=True)
-        # Un rows Ko Hata Rahe Hain JinKa "aqi_target" Khali (NaN) Hai —
+        # Un Rows Ko Hata Rahe Hain JinKa "aqi_target" Khali (NaN) Hai —
         # Kyunki Agla Din Ka data Na Hone Ki Wajah Se Inn rows Ko training
         # Ke Liye use Nahi Kiya Ja Sakta. reset_index Se index Dobara clean
         # Ho Jata Hai.
