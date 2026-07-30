@@ -245,7 +245,7 @@ class FeatureEngineer:
         combined = self.add_derived_features(combined, value_col="pm25_avg")
         combined = self.add_target(combined, value_col="pm25_avg")
         combined["ingested_at"] = pd.Timestamp(datetime.now(timezone.utc))
-        # Ek Column Add Kar Rahe Hain Jismein Ye record Hoga Ke Ye data
+        # Ek Column Add Kar Rahe Hain Jismein Ye Record Hoga Ke Ye data
         # Kis Waqt (UTC mein) fetch/process Kiya Gaya.
  
         combined = combined.dropna(subset=["aqi_target"]).reset_index(drop=True)
