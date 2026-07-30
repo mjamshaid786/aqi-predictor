@@ -204,7 +204,7 @@ class FeatureEngineer:
         # se replace kar rahe hain taake division-by-zero error na aaye.
         df["aqi_rolling_mean_3"] = grouped[value_col].transform(lambda s: s.rolling(window=3, min_periods=1).mean())
         # Har City Ke Andar 3-din Ka moving/rolling average calculate Kar
-        # Rahe Hain (min_periods=1 Matlab Shuru ke 1-2 din bhi average mil
+        # Rahe Hain (min_periods=1 Matlab Shuru Ke 1-2 din bhi average mil
         # jayega, jitna data available ho usi se).
         return df
     '''
