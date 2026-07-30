@@ -288,5 +288,5 @@ if __name__ == "__main__":
     sys.exit(main())
     # Yeh check Karta Hai Ke script Ko directly run Kiya Gaya Hai (Na Ke
     # Kisi Doosre module Se import Kiya Gaya Hai). Agar directly run Hua Hai
-    # to main() function chalao aur uska return value (exit code) ko
+    # Mo main() function chalao aur uska return value (exit code) ko
     # sys.exit() ke zariye operating system ko wapis bhej do.
