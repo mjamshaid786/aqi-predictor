@@ -238,7 +238,7 @@ class FeatureEngineer:
             raise RuntimeError("No usable AQICN data returned for any city.")
  
         combined = pd.concat(per_city_frames, ignore_index=True)
-        # Sab cities Ke DataFrames Ko rows Ki Tarah (Ek Ke Neeche Ek) Jor
+        # Sab cities Ke DataFrames Ko Rows Ki Tarah (Ek Ke Neeche Ek) Jor
         # Kar Ek combined DataFrame Bana Rahe Hain. ignore_index=True Se
         # Naya clean index Milega.
         combined = self.add_time_based_features(combined)
