@@ -263,7 +263,7 @@ def main() -> int:
     env_vars = load_environment()
     # Environment Variables Load Karne Wala Step — critical=True Matlab
     # Agar Ye fail Ho To Poora Program Yahin Ruk Jayega (Aage Jane Ka Koi
-    # Faida Nahi Kyunki API key Ke Baghair Kuch Nahi Ho Sakta).
+    # Faida Nahi Kyunki API Key Ke Baghair Kuch Nahi Ho Sakta).
  
     print("Step: Fetching raw AQI data from AQICN...")
     client = AQICNClient(api_key=env_vars["aqicn_key"])
