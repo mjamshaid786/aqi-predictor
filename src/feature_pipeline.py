@@ -251,7 +251,7 @@ class FeatureEngineer:
         combined = combined.dropna(subset=["aqi_target"]).reset_index(drop=True)
         # Un Rows Ko Hata Rahe Hain JinKa "aqi_target" Khali (NaN) Hai —
         # Kyunki Agla Din Ka Data Na Hone Ki Wajah Se Inn Rows Ko Training
-        # Ke Liye Use Nahi Kiya Ja Sakta. reset_index Se Index Dobara clean
+        # Ke Liye Use Nahi Kiya Ja Sakta. reset_index Se Index Dobara Clean
         # Ho Jata Hai.
         return combined
  
