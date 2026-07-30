@@ -213,7 +213,7 @@ class FeatureEngineer:
     ===============================================================
     ''' 
     def add_target(self, df: pd.DataFrame, value_col: str = "pm25_avg") -> pd.DataFrame:
-    # Yeh Method Machine Learning Ke Liye "target" column Banata Hai
+    # Yeh Method Machine Learning Ke Liye "target" Column Banata Hai
     # (Jo Predict Karna Hai).
         df = df.copy()
         grouped = df.groupby("city", group_keys=False)
