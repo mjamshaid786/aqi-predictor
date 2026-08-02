@@ -9,3 +9,4 @@ python-dotenv==1.0.0
 confluent-kafka
 plotly
 tensorflow
+shap

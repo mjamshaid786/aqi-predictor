@@ -12,7 +12,12 @@ import plotly.graph_objects as go
 import streamlit as st
 import hopsworks
 from dotenv import load_dotenv
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import tensorflow as tf
+from inference_pipeline import generate_3day_forecast
 
 # ----------------------------------------------------------------------------
 # 1. Page Config & Custom Styling
@@ -44,7 +49,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 load_dotenv()
-FG_NAME, FG_VERSION = "aqi_predictions", 6
+FG_NAME, FG_VERSION = "aqi_predictions", 7
 
 CANDIDATE_MODEL_NAMES = [
     "aqi_neural_network_model",
@@ -71,6 +76,11 @@ def get_project():
 # ----------------------------------------------------------------------------
 # Fixed & Updated load_model() Function
 # --------------------------------------------------------------------
+@st.cache_resource(show_spinner=False)
+def get_registry():
+    return get_project().get_model_registry()
+
+
 @st.cache_resource(ttl=3600, show_spinner="Downloading best model from Hopsworks Model Registry...")
 def load_model():
     project = get_project()
@@ -170,6 +180,34 @@ def load_features():
 # ----------------------------------------------------------------------------
 # 3. Inference & Forecasting Logic
 # ----------------------------------------------------------------------------
+def pm25_to_aqi(pm25: float) -> float:
+    """
+    Convert a raw PM2.5 concentration (µg/m³) into the actual US EPA AQI
+    index (0-500 scale) using the official piecewise-linear breakpoint
+    formula. The model predicts raw PM2.5 concentration (that's what
+    'aqi_target' is, despite the name) -- this converts it to the real
+    AQI number so it matches what IQAir/AQICN/etc. report, instead of
+    displaying the raw µg/m³ value mislabeled as "AQI".
+    """
+    if pm25 is None or pd.isna(pm25):
+        return float("nan")
+    pm25 = max(0.0, float(pm25))
+    # (C_low, C_high, I_low, I_high)
+    breakpoints = [
+        (0.0, 12.0, 0, 50),
+        (12.1, 35.4, 51, 100),
+        (35.5, 55.4, 101, 150),
+        (55.5, 150.4, 151, 200),
+        (150.5, 250.4, 201, 300),
+        (250.5, 350.4, 301, 400),
+        (350.5, 500.4, 401, 500),
+    ]
+    for c_low, c_high, i_low, i_high in breakpoints:
+        if c_low <= pm25 <= c_high:
+            return (i_high - i_low) / (c_high - c_low) * (pm25 - c_low) + i_low
+    return 500.0  # above scale -- cap at max
+
+
 def predict(model, scaler, feature_names, df: pd.DataFrame) -> pd.Series:
     if feature_names:
         missing = [c for c in feature_names if c not in df.columns]
@@ -186,6 +224,34 @@ def predict(model, scaler, feature_names, df: pd.DataFrame) -> pd.Series:
     return pd.Series(preds, index=df.index)
 
 
+@st.cache_data(ttl=3600, show_spinner="Computing SHAP explanations (this can take a minute)...")
+def compute_shap_values(_model, _scaler, feature_names, df_features: pd.DataFrame,
+                         background_size: int = 50, explain_size: int = 30):
+    """
+    Model-agnostic SHAP explanation: works identically for tree models
+    (Random Forest, Gradient Boosting), linear models (Ridge, Lasso), and
+    the Keras neural network, since it wraps model.predict() directly
+    rather than needing a model-specific SHAP explainer.
+    Cached by Streamlit (leading underscore on _model/_scaler tells
+    Streamlit not to try hashing the unhashable model object itself).
+    """
+    import shap
+
+    X = df_features[feature_names].copy()
+    background = X.sample(n=min(background_size, len(X)), random_state=42)
+    explain_sample = X.sample(n=min(explain_size, len(X)), random_state=7)
+
+    def predict_fn(data):
+        arr = np.asarray(data)
+        if _scaler is not None:
+            arr = _scaler.transform(arr)
+        return np.asarray(_model.predict(arr)).reshape(-1)
+
+    explainer = shap.Explainer(predict_fn, background)
+    shap_values = explainer(explain_sample)
+    return shap_values, explain_sample
+
+
 def render_alert_banner(aqi: float):
     if aqi > 200:
         st.error(f"🚨 **VERY HAZARDOUS AQI ({aqi:.0f})** — Serious health effects for all populations. Avoid all outdoor activities!")
@@ -199,39 +265,7 @@ def render_alert_banner(aqi: float):
         st.success(f"✅ **GOOD AIR QUALITY ({aqi:.0f})** — Air pollution poses little or no risk.")
 
 
-def generate_3day_forecast(df: pd.DataFrame, model, scaler, feature_names):
-    """
-    Simulates a 3-Day (72-Hour) rolling projection based on recent trends
-    and model predictions for upcoming time windows.
-    """
-    last_row = df.iloc[-1].copy()
-    last_time = pd.to_datetime(last_row.get("timestamp", pd.Timestamp.now()))
-    
-    future_rows = []
-    current_aqi = last_row.get("predicted_aqi", last_row.get("pm25_avg", 100))
-    
-    for h in range(1, 73):
-        future_time = last_time + pd.Timedelta(hours=h)
-        row_copy = last_row.copy()
-        
-        # Update time features
-        row_copy["hour"] = future_time.hour
-        row_copy["day"] = future_time.day
-        row_copy["day_of_week"] = future_time.dayofweek
-        row_copy["is_weekend"] = 1 if future_time.dayofweek >= 5 else 0
-        if "timestamp" in row_copy:
-            row_copy["timestamp"] = future_time
-            
-        # Add slight cyclic variance based on hour
-        diurnal_factor = np.sin((future_time.hour - 6) * np.pi / 12) * 8
-        simulated_aqi = max(10, current_aqi + diurnal_factor + np.random.normal(0, 2))
-        row_copy["predicted_aqi"] = simulated_aqi
-        row_copy["forecast_time"] = future_time
-        
-        future_rows.append(row_copy)
-        current_aqi = simulated_aqi
-        
-    return pd.DataFrame(future_rows)
+
 
 
 # ----------------------------------------------------------------------------
@@ -264,7 +298,15 @@ else:
     st.markdown("Real-time air pollution forecasting using machine learning pipelines connected to Hopsworks Feature Store.")
 
     # Model Performance Tag
-    metrics_str = f"Test RMSE: {model_metrics.get('test_rmse', 'N/A'):.2f} | R²: {model_metrics.get('test_r2', 'N/A'):.2f}" if isinstance(model_metrics, dict) else ""
+    def fmt_metric(v):
+        try:
+            return f"{float(v):.2f}"
+        except (TypeError, ValueError):
+            return "N/A"
+    metrics_str = (
+        f"Test RMSE: {fmt_metric(model_metrics.get('test_rmse'))} | "
+        f"R²: {fmt_metric(model_metrics.get('test_r2'))}"
+    ) if isinstance(model_metrics, dict) else ""
     st.sidebar.markdown(f"🏆 **Active Model:** `{model_name}` (v{model_version})")
     if metrics_str:
         st.sidebar.caption(metrics_str)
@@ -273,10 +315,13 @@ else:
     df["predicted_aqi"] = predict(model, scaler, feature_names, df)
     
     latest = df.iloc[-1]
-    current_pm25 = latest.get("pm25_avg", latest.get("pm2_5", latest.get("pm25", 0.0)))
-    predicted_aqi = latest["predicted_aqi"]
-    prev_actual = df["aqi_target"].iloc[-2] if "aqi_target" in df.columns and len(df) > 1 else predicted_aqi
-    delta = predicted_aqi - prev_actual
+    current_pm25 = latest.get("pm25_avg", latest.get("pm2_5", latest.get("pm25", np.nan)))
+    if pd.isna(current_pm25):
+        current_pm25 = None
+    predicted_aqi = pm25_to_aqi(latest["predicted_aqi"])  # convert raw PM2.5 prediction -> real AQI
+    prev_actual_raw = df["aqi_target"].iloc[-2] if "aqi_target" in df.columns and len(df) > 1 else None
+    prev_actual = pm25_to_aqi(prev_actual_raw) if prev_actual_raw is not None else predicted_aqi
+    delta = (predicted_aqi - prev_actual) if pd.notna(prev_actual) and pd.notna(predicted_aqi) else None
 
     # Create Main Tabs matching PDF Requirements
     tab_forecast, tab_analytics, tab_data = st.tabs([
@@ -291,63 +336,73 @@ else:
     with tab_forecast:
         # KPI Row
         c1, c2, c3, c4 = st.columns(4)
-        c1.metric("Current PM2.5 Level", f"{current_pm25:.1f} µg/m³")
+        c1.metric("Current PM2.5 Level", f"{current_pm25:.1f} µg/m³" if current_pm25 is not None else "N/A")
         c2.metric("Next-Hour Predicted AQI", f"{predicted_aqi:.1f}")
-        c3.metric("Change vs Previous Hour", f"{delta:+.1f}")
+        c3.metric("Change vs Previous Hour", f"{delta:+.1f}" if delta is not None else "N/A")
         c4.metric("Active Model", model_name.replace("aqi_", "").replace("_model", "").upper())
 
         st.markdown("---")
         render_alert_banner(predicted_aqi)
         st.markdown("---")
 
-        # 3-Day Forecast Horizon Section
-        st.subheader("📅 Next 3 Days AQI Forecast Horizon")
-        forecast_df = generate_3day_forecast(df, model, scaler, feature_names)
-        
-        # 3-Day Summary Cards
-        fc_col1, fc_col2, fc_col3 = st.columns(3)
-        
-        day1_avg = forecast_df.iloc[0:24]["predicted_aqi"].mean()
-        day2_avg = forecast_df.iloc[24:48]["predicted_aqi"].mean()
-        day3_avg = forecast_df.iloc[48:72]["predicted_aqi"].mean()
+        # 3-Day Forecast Horizon Section (REAL model predictions -- one
+        # genuine prediction per horizon from that horizon's own trained
+        # model, not a simulated/random curve)
+        st.subheader("📅 Next 3 Days AQI Forecast (Real Model Predictions)")
+        forecast_df = generate_3day_forecast(df, get_registry())
 
-        with fc_col1:
-            st.info(f"**Day 1 Forecast (Next 24 Hours)**\n\n### Avg AQI: {day1_avg:.0f}")
-        with fc_col2:
-            st.info(f"**Day 2 Forecast (24-48 Hours)**\n\n### Avg AQI: {day2_avg:.0f}")
-        with fc_col3:
-            st.info(f"**Day 3 Forecast (48-72 Hours)**\n\n### Avg AQI: {day3_avg:.0f}")
+        fc_col1, fc_col2, fc_col3 = st.columns(3)
+        for col, (_, row) in zip([fc_col1, fc_col2, fc_col3], forecast_df.iterrows()):
+            with col:
+                if row["predicted_aqi"] is not None:
+                    card_aqi = pm25_to_aqi(row["predicted_aqi"])
+                    st.info(
+                        f"**{row['label']}**\n\n### AQI: {card_aqi:.0f}\n\n"
+                        f"_{row['model_name']} (v{row['model_version']})_"
+                    )
+                else:
+                    st.warning(f"**{row['label']}**\n\nUnavailable: {row.get('error', 'model not found')}")
 
         # Interactive Forecast Chart
-        st.subheader("📈 Historical Trend vs 72-Hour Forecast Horizon")
+        st.subheader("📈 Historical Trend + 3-Day Forecast Points")
         
         recent = df.tail(48)
         fig = go.Figure()
         x_col = "timestamp" if "timestamp" in recent.columns else "date"
         pm_col = "pm25_avg" if "pm25_avg" in recent.columns else ("pm2_5" if "pm2_5" in recent.columns else "pm25")
 
-        # Actual PM2.5 line
+        # Actual AQI line (converted from raw PM2.5 concentration, same
+        # formula as everywhere else, so this is on the same scale as the
+        # prediction traces below -- mixing raw µg/m³ with AQI index
+        # values on one chart would be misleading)
         if pm_col in recent.columns:
             fig.add_trace(go.Scatter(
-                x=recent[x_col], y=recent[pm_col],
-                name="Actual PM2.5", mode="lines+markers", line=dict(color="#FF9800", width=2)
+                x=recent[x_col], y=recent[pm_col].apply(pm25_to_aqi),
+                name="Actual AQI", mode="lines+markers", line=dict(color="#FF9800", width=2)
             ))
 
         # Model Historical Predictions
         fig.add_trace(go.Scatter(
-            x=recent[x_col], y=recent["predicted_aqi"],
+            x=recent[x_col], y=recent["predicted_aqi"].apply(pm25_to_aqi),
             name="Model Prediction (Historical)", mode="lines", line=dict(color="#00E676", width=2, dash="dash")
         ))
 
-        # 3-Day Forecast Line
+        # 3-Day Forecast: 3 real points (current value + day1 + day2 + day3),
+        # connected with straight lines for visual continuity. These are
+        # NOT hourly-resolution predictions -- each is a genuine direct
+        # prediction from that horizon's own model.
+        valid_forecast = forecast_df.dropna(subset=["predicted_aqi"])
+        forecast_x = [latest.get("timestamp", recent[x_col].iloc[-1])] + list(valid_forecast["forecast_time"])
+        forecast_y = [predicted_aqi] + [pm25_to_aqi(v) for v in valid_forecast["predicted_aqi"]]
         fig.add_trace(go.Scatter(
-            x=forecast_df["forecast_time"], y=forecast_df["predicted_aqi"],
-            name="3-Day Future Forecast", mode="lines+markers", line=dict(color="#00B0FF", width=2)
+            x=forecast_x, y=forecast_y,
+            name="3-Day Forecast (Day1/Day2/Day3)", mode="lines+markers",
+            line=dict(color="#00B0FF", width=2), marker=dict(size=10),
         ))
 
         fig.update_layout(
             xaxis_title="Timeline",
-            yaxis_title="AQI / PM2.5 (µg/m³)",
+            yaxis_title="AQI (US EPA Index)",
             hovermode="x unified",
             template="plotly_dark",
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
@@ -358,31 +413,46 @@ else:
     # TAB 2: Advanced Analytics & Feature Importance
     # ------------------------------------------------------------------------
     with tab_analytics:
-        st.subheader("🔍 Model Explainability & Feature Importance")
-        st.caption("Understanding which features drive the AQI predictions (SHAP / Tree Weights Analysis).")
+        st.subheader("🔍 Model Explainability (SHAP)")
+        st.caption(
+            "Real SHAP (SHapley Additive exPlanations) values — computed the same way "
+            "regardless of which algorithm is active (tree, linear, or neural network), "
+            "since it treats the model as a black box via model.predict()."
+        )
 
-        # Feature Importance Extraction Logic
-        features_list = feature_names if feature_names else [c for c in df.columns if c not in DROP_COLS]
-        
-        importances = None
-        if hasattr(model, "feature_importances_"):
-            importances = model.feature_importances_
-        elif hasattr(model, "coef_"):
-            importances = np.abs(model.coef_)
+        if feature_names:
+            try:
+                shap_values, explain_sample = compute_shap_values(model, scaler, feature_names, df)
 
-        if importances is not None and len(importances) == len(features_list):
-            fi_df = pd.DataFrame({"Feature": features_list, "Importance": importances})
-            fi_df = fi_df.sort_values(by="Importance", ascending=True)
+                # Mean |SHAP value| per feature -- overall importance ranking
+                mean_abs_shap = np.abs(shap_values.values).mean(axis=0)
+                shap_df = pd.DataFrame({"Feature": feature_names, "Mean |SHAP value|": mean_abs_shap})
+                shap_df = shap_df.sort_values(by="Mean |SHAP value|", ascending=True)
 
-            fig_fi = px.bar(
-                fi_df, x="Importance", y="Feature", orientation="h",
-                title="Relative Feature Importance Weights",
-                color="Importance", color_continuous_scale="Viridis"
-            )
-            fig_fi.update_layout(template="plotly_dark", height=400)
-            st.plotly_chart(fig_fi, use_container_width=True)
+                fig_shap_bar = px.bar(
+                    shap_df, x="Mean |SHAP value|", y="Feature", orientation="h",
+                    title="Feature Importance (Mean Absolute SHAP Value)",
+                    color="Mean |SHAP value|", color_continuous_scale="Viridis"
+                )
+                fig_shap_bar.update_layout(template="plotly_dark", height=500)
+                st.plotly_chart(fig_shap_bar, use_container_width=True)
+
+                # True SHAP beeswarm plot -- shows both magnitude AND direction
+                # (does a high value of this feature push the prediction up or down)
+                st.markdown("**SHAP Summary (Beeswarm) Plot**")
+                st.caption("Each dot is one prediction. Color = feature value (red=high, blue=low). "
+                           "Position = impact on that prediction (right = pushes AQI up).")
+                import matplotlib.pyplot as plt
+                import shap as shap_lib
+                fig_beeswarm = plt.figure()
+                shap_lib.plots.beeswarm(shap_values, show=False)
+                st.pyplot(fig_beeswarm, use_container_width=True)
+                plt.close(fig_beeswarm)
+
+            except Exception as e:
+                st.warning(f"Could not compute SHAP values: {e}")
         else:
-            st.info("Feature importance tree plot is generated automatically for Tree-based models (Random Forest, Gradient Boosting) and Linear models (Lasso, Ridge).")
+            st.info("SHAP explanations require the model's feature_names.txt (should be present for all registered models).")
 
         st.markdown("---")
         st.subheader("📊 Exploratory Pollution Trends (EDA)")

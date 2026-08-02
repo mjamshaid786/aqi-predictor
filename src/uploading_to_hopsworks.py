@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import logging
@@ -27,8 +26,8 @@ except ImportError:
 # --------------------------------------------------------------------------- #
 DATA_PATH = Path("src/data/cleaned_data.csv")
 FEATURE_GROUP_NAME = "aqi_predictions"
-FEATURE_GROUP_VERSION = 6
-FEATURE_GROUP_DESCRIPTION = "Hourly AQI prediction features per city (AQICN source)"
+FEATURE_GROUP_VERSION = 7
+FEATURE_GROUP_DESCRIPTION = "Hourly AQI features per city (Open-Meteo source) with next-hour + 24/48/72h forecast targets"
 SOURCE_TIMESTAMP_COLUMN = "timestamp"  # raw per-row observation timestamp from AQICN
 PRIMARY_KEY = ["city", "date", "hour"]  # one row per city, per calendar day, per hour
 EVENT_TIME_COLUMN = "timestamp"         # full timestamp used for point-in-time correctness
@@ -84,7 +83,10 @@ def sanitize_integer_columns(df: pd.DataFrame) -> pd.DataFrame:
         "pm10_avg", "pm10_max", "pm10_min",
         "pm25_avg", "pm25_max", "pm25_min",
         "uvi_avg", "uvi_max",
-        "aqi_lag_1", "aqi_change_rate", "aqi_rolling_mean_3", "aqi_target",
+        "temperature_2m", "relative_humidity_2m", "wind_speed_10m",
+        "wind_direction_10m", "surface_pressure", "precipitation", "cloud_cover",
+        "aqi_lag_1", "aqi_change_rate", "aqi_rolling_mean_3",
+        "aqi_target", "aqi_target_24h", "aqi_target_48h", "aqi_target_72h",
     ]
     int_columns = ["hour", "day", "month", "day_of_week", "is_weekend"]
 
@@ -228,10 +230,20 @@ def get_or_create_feature_group(fs, sample_df: pd.DataFrame):
         Feature(name="pm25_min", type="double"),
         Feature(name="uvi_avg", type="double"),
         Feature(name="uvi_max", type="double"),
+        Feature(name="temperature_2m", type="double"),
+        Feature(name="relative_humidity_2m", type="double"),
+        Feature(name="wind_speed_10m", type="double"),
+        Feature(name="wind_direction_10m", type="double"),
+        Feature(name="surface_pressure", type="double"),
+        Feature(name="precipitation", type="double"),
+        Feature(name="cloud_cover", type="double"),
         Feature(name="aqi_lag_1", type="double"),
         Feature(name="aqi_change_rate", type="double"),
         Feature(name="aqi_rolling_mean_3", type="double"),
         Feature(name="aqi_target", type="double"),
+        Feature(name="aqi_target_24h", type="double"),
+        Feature(name="aqi_target_48h", type="double"),
+        Feature(name="aqi_target_72h", type="double"),
     ]
 
     feature_group = fs.get_or_create_feature_group(
@@ -244,6 +256,21 @@ def get_or_create_feature_group(fs, sample_df: pd.DataFrame):
         time_travel_format="HUDI",  # avoids requiring the local 'delta' package
         features=schema,
     )
+
+    # get_or_create_feature_group() ignores `features=schema` for a group
+    # that already exists -- so explicitly add ANY column declared in
+    # `schema` above that's missing from the live feature group, via
+    # schema evolution, instead of bumping the version every time a new
+    # feature is added.
+    existing_names = {f.name.lower() for f in feature_group.features}
+    missing_cols = [f for f in schema if f.name.lower() not in existing_names]
+    if missing_cols:
+        logger.info(
+            "Adding %d new column(s) to existing v%d schema: %s",
+            len(missing_cols), FEATURE_GROUP_VERSION,
+            [f.name for f in missing_cols],
+        )
+        feature_group.append_features(missing_cols)
 
     logger.info("Feature group ready. [4/5]")
     return feature_group
