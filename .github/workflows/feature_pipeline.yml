@@ -2,43 +2,37 @@ name: Hourly Feature Pipeline
 
 on:
   schedule:
-    - cron: '25 * * * *'  # Runs every hour
+    - cron: '25 * * * *'  # Runs every hour, at :25 past the hour
   workflow_dispatch:      # Manual trigger button
 
 jobs:
   run-feature-pipeline:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Python 3.12.13
-        uses: actions/setup-python@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.12.13'
+          python-version: '3.12'
+          cache: 'pip'
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 1: Fetch fresh raw data from AQICN API
-      - name: Fetch Fresh Data from API
-        env:
-          AQICN_API_KEY: ${{ secrets.AQICN_API_KEY }}
-        run: |
-          python src/feature_pipeline.py
-
-      # Step 2: Clean the fetched data
-      - name: Clean Data
-        run: |
-          python src/data/data_cleaning.py
-
-      # Step 3: Upload cleaned data to Hopsworks Feature Store
-      - name: Upload Cleaned Data to Hopsworks
+      # feature_pipeline.py now does everything in one script: fetches
+      # fresh pollutant + weather data from Open-Meteo (same source as
+      # backfill_data.py -- AQICN is no longer used anywhere), computes
+      # features, and upserts directly into the Hopsworks feature group.
+      # No separate cleaning or upload step is needed anymore.
+      - name: Run Feature Pipeline (fetch + upsert to Hopsworks)
         env:
           HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
           HOPSWORKS_PROJECT: ${{ secrets.HOPSWORKS_PROJECT }}
-        run: |
-          python src/uploading_to_hopsworks.py
+          HOPSWORKS_HOST: ${{ secrets.HOPSWORKS_HOST }}
+        run: python src/feature_pipeline.py

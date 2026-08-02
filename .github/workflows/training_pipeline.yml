@@ -2,31 +2,36 @@ name: Daily Model Training Pipeline
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Runs daily at midnight
-  workflow_dispatch:     # Manual trigger button
+    - cron: '0 1 * * *'  # Runs daily at 01:00 UTC -- after the hourly
+                          # feature pipeline (:25) has had a chance to run
+  workflow_dispatch:      # Manual trigger button
 
 jobs:
   run-training-pipeline:
     runs-on: ubuntu-latest
+    timeout-minutes: 90   # training + registering ~20 models can take a while
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Python 3.12.13
-        uses: actions/setup-python@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.12.13'
+          python-version: '3.12'
+          cache: 'pip'
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 4: Train Model on updated data & push to Registry
+      # training_pipeline.py fetches (features, targets) from the
+      # Hopsworks feature group, trains all 4 horizons x 5 algorithms,
+      # and registers each model to the Hopsworks Model Registry.
       - name: Run Model Training & Save to Registry
         env:
           HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
           HOPSWORKS_PROJECT: ${{ secrets.HOPSWORKS_PROJECT }}
-        run: |
-          python src/training_pipeline.py
+          HOPSWORKS_HOST: ${{ secrets.HOPSWORKS_HOST }}
+        run: python src/training_pipeline.py
