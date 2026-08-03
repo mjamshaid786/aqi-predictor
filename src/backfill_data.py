@@ -30,7 +30,7 @@ def fetch_open_meteo_weather_data(days_back: int, days_forward: int = 0, use_arc
     -- separate from the pollutant data above. Current weather is a strong
     predictor of how pollution will disperse/build up over the next 
     days (e.g. wind speed/direction), which the pollutant-only features
-    were missing entirely..
+    were missing entirely.
 
     use_archive=True: archive-api.open-meteo.com (deep historical
     reanalysis, good for the 365-day backfill, but has a few days' lag
