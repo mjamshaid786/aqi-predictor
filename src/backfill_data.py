@@ -32,7 +32,7 @@ def fetch_open_meteo_weather_data(days_back: int, days_forward: int = 0, use_arc
     days (e.g. wind speed/direction), which the pollutant-only features
     were missing entirely.
 
-    use_archive=True: archive-api.open-meteo. (deep historical
+    use_archive=True: archive-api.open-meteo.com (deep historical
     reanalysis, good for the 365-day backfill, but has a few days' lag
     before the very latest data is available).
     use_archive=False: api.open-meteo.com/v1/forecast with past_days
