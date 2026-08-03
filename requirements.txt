@@ -10,3 +10,4 @@ confluent-kafka
 plotly
 tensorflow
 shap
+matplotlib
