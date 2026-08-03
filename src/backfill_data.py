@@ -88,7 +88,7 @@ def fetch_open_meteo_historical_data(days_back: int = 90, days_forward: int = 0)
                   (0 for pure backfill; feature_pipeline.py uses a small
                   days_back window + days_forward=0 too, since our own
                   trained models -- not Open-Meteo's forecast -- are what
-                  produce the AQI forecast).
+                  produce  AQI forecast).
     """
     label = f"{days_back}-day" if days_forward == 0 else f"{days_back}-day + {days_forward}-day forecast"
     print(f"--> Fetching {label} data from Open-Meteo API...")
