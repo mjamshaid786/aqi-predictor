@@ -33,7 +33,7 @@ def fetch_open_meteo_weather_data(days_back: int, days_forward: int = 0, use_arc
     were missing entirely.
 
     use_archive=True: archive-api.open-meteo.com (deep historical
-    reanalysis, good for the 365-day backfill,  has a few days' lag
+    reanalysis, good for the 365-day backfill, but has a few days' lag
     before the very latest data is available).
     use_archive=False: api.open-meteo.com/v1/forecast with past_days
     (near-real-time, no lag -- used by feature_pipeline.py for the small
