@@ -13,7 +13,7 @@ OUTPUT_DIR = PROJECT_ROOT / "data"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUT_CSV = OUTPUT_DIR / "aqi_features_lahore.csv"
 
-# Lahore Location Parameters
+# Lahore Locati Parameters
 LATITUDE = 31.5204
 LONGITUDE = 74.3587
 CITY_NAME = "lahore"
