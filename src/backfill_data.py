@@ -27,7 +27,7 @@ WEATHER_HOURLY_VARS = (
 def fetch_open_meteo_weather_data(days_back: int, days_forward: int = 0, use_archive: bool = True) -> pd.DataFrame:
     """
     Fetch hourly WEATHER data (temperature, humidity, wind, pressure, etc.)
-    -- separate from the pollutant data above. Current weather is a strong
+    -- separate fro the pollutant data above. Current weather is a strong
     predictor of how pollution will disperse/build up over the next 
     days (e.g. wind speed/direction), which the pollutant-only features
     were missing entirely.
