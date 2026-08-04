@@ -28,7 +28,7 @@ def fetch_open_meteo_weather_data(days_back: int, days_forward: int = 0, use_arc
     """
     Fetch hourly WEATHER data (temperature, humidity, wind, pressure, etc.)
     -- separate from the pollutant data above. Current weather is a strong
-    predictor of how pollution will disperse/build up over  next 
+    predictor of how pollution will disperse/build up over the next 
     days (e.g. wind speed/direction), which the pollutant-only features
     were missing entirely.
 
