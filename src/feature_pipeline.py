@@ -32,7 +32,7 @@ FEATURE_GROUP_NAME = "aqi_predictions"
 FEATURE_GROUP_VERSION = 7
 
 # Enough recent hours to correctly recompute lag_1 / rolling_mean_3 for the
-# newest rows. A few days of overlap is cheap and makes the upsert
+# newest rows. A few  of overlap is cheap and makes the upsert
 # idempotent/safe to re-run.
 RECENT_DAYS_WINDOW = 5
 
