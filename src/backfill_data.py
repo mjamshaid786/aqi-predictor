@@ -131,7 +131,7 @@ def transform_and_align_schema(df_om: pd.DataFrame) -> pd.DataFrame:
     
     df_transformed = pd.DataFrame()
     
-    # 1. Primary Keys & String Definiti
+    # 1. Primary Keys & String Definitions
     df_transformed['date'] = df_om['date'].dt.strftime('%Y-%m-%d').astype(str)
     df_transformed['city'] = CITY_NAME
     
