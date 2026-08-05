@@ -1,7 +1,7 @@
 """
 Real inference logic for the AQI dashboard's 3-day forecast.
 
-Each horizon (day1=+24h, day2=+48h, day3=+72h) w trained as a DIRECT
+Each horizon (day1=+24h, day2=+48h, day3=+72h) was trained as a DIRECT
 target (real future ground-truth value via shift(-24/-48/-72) on the
 hourly series -- see backfill_data.py). So producing the 3-day forecast
 means: take the model trained for that specific horizon, feed it the
