@@ -2,7 +2,7 @@ import os
 import hopsworks
 from dotenv import load_dotenv
 
-# 1. .env file se environment variables load kar
+# 1. .env file se environment variables load karein
 load_dotenv()
 
 HOPSWORKS_API_KEY = os.getenv("HOPSWORKS_API_KEY")
