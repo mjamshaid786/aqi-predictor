@@ -139,7 +139,7 @@ def transform_and_align_schema(df_om: pd.DataFrame) -> pd.DataFrame:
     # BUG FIX: this previously called datetime.now(timezone.utc) once and
     # assigned that SAME value to every row, which made every hourly record
     # collapse onto an identical timestamp -- and therefore an identical
-    # (city, date, hour) primary key in Hopsworks, wipin out all but one
+    # (city, date, hour) primary key in Hopsworks, wiping out all but one
     # row on upsert. The real per-row observation time is already sitting
     # in df_om['date'] (that's what 'hour'/'day'/'month' below are derived
     # from) -- so 'timestamp' must be derived from THAT, not from "now".
