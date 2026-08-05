@@ -24,7 +24,7 @@ except ImportError:
 # Each real forecast horizon and the ground-truth target column it trains
 # against (these targets are real future values via shift(-N) on the hourly
 # series in backfill_data.py / feature_pipeline.py -- not simulated).
-# "next_hour" keeps its original unsuffixed model names for backward
+# "next_hour" keeps its original unsuffixed model na for backward
 # compatibility with the existing dashboard KPI card.
 HORIZONS = {
     "next_hour": "aqi_target",
