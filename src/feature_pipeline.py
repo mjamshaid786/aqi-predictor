@@ -40,7 +40,7 @@ RECENT_DAYS_WINDOW = 5
 def fetch_latest_features() -> pd.DataFrame:
     print(f"--> Fetching latest {RECENT_DAYS_WINDOW}-day window from Open-Meteo (live features)...")
     raw_df = fetch_open_meteo_historical_data(days_back=RECENT_DAYS_WINDOW, days_forward=0)
-    # use_
+    # 
     weather_df = fetch_open_meteo_weather_data(days_back=RECENT_DAYS_WINDOW, days_forward=0, use_archive=False)
     merged_df = merge_pollutant_and_weather(raw_df, weather_df)
     df = transform_and_align_schema(merged_df)
