@@ -390,7 +390,7 @@ else:
         # 3-Day Forecast: 3 real points (current value + day1 + day2 + day3),
         # connected with straight lines for visual continuity. These are
         # NOT hourly-resolution predictions -- each is a genuine direct
-        # prediction from that hor
+        # prediction from th
         valid_forecast = forecast_df.dropna(subset=["predicted_aqi"])
         forecast_x = [latest.get("timestamp", recent[x_col].iloc[-1])] + list(valid_forecast["forecast_time"])
         forecast_y = [predicted_aqi] + [pm25_to_aqi(v) for v in valid_forecast["predicted_aqi"]]
