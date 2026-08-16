@@ -25,7 +25,7 @@ except ImportError:
 # against (these targets are real future values via shift(-N) on the hourly
 # series in backfill_data.py / feature_pipeline.py -- not simulated).
 # "next_hour" keeps its original unsuffixed model names for backward
-# compatibility with the existing dashboard KPI card.
+# compatibility with the existing dashboard KPI c
 HORIZONS = {
     "next_hour": "aqi_target",
     "day1_24h": "aqi_target_24h",
