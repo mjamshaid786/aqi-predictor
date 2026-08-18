@@ -387,7 +387,7 @@ else:
             name="Model Prediction (Historical)", mode="lines", line=dict(color="#00E676", width=2, dash="dash")
         ))
 
-        # 3-Day Forec
+        # 3-Day F
         valid_forecast = forecast_df.dropna(subset=["predicted_aqi"])
         forecast_x = [latest.get("timestamp", recent[x_col].iloc[-1])] + list(valid_forecast["forecast_time"])
         forecast_y = [predicted_aqi] + [pm25_to_aqi(v) for v in valid_forecast["predicted_aqi"]]
