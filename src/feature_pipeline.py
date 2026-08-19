@@ -11,7 +11,7 @@ them) guarantees the schema can never drift apart again.
 This script simply re-fetches a short recent window (enough hours to
 recompute lag_1 / rolling_mean_3 correctly) and upserts it into the same
 Hopsworks feature group used for training. It does NOT fabricate a
-
+fore
 """
 import os
 import sys
