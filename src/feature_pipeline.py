@@ -10,7 +10,9 @@ them) guarantees the schema can never drift apart again.
 
 This script simply re-fetches a short recent window (enough hours to
 recompute lag_1 / rolling_mean_3 correctly) and upserts it into the same
-Hopsworks feature group used for training. I
+Hopsworks feature group used for training. It does NOT fabricate a
+forecast -- the actual 3-day forecast is produced by the trained models
+in inference_pipeline.py, using these real, latest features as input.
 """
 import os
 import sys
