@@ -1,5 +1,5 @@
 """
-Live Feature Pipeline (runs periodical
+Live Feature Pipeline (runs periodica
 
 IMPORTANT: This now uses Open-Meteo -- the SAME source and hourly
 resolution as backfill_data.py -- instead of AQICN's daily forecast feed.
