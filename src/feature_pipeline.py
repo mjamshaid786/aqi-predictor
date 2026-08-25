@@ -1,7 +1,7 @@
 """
 Live Feature Pipeline.
 
-IMPORTANT: This now uses Open-Meteo -- the SAME source and hour
+IMPORTANT: This now uses Open-Meteo -- the SAME source and hou
 resolution as backfill_data.py -- instead of AQICN's daily forecast feed.
 Mixing an hourly-trained model with daily-resolution live data was the
 root cause of the "sources don't match" issue flagged in review. Reusing
