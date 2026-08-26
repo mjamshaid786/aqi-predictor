@@ -1,5 +1,5 @@
 """
-IMPORTANT: This now uses O
+IMPORTANT: This now use
 resolution as backfill_data.py -- instead of AQICN's daily forecast feed.
 Mixing an hourly-trained model with daily-resolution live data was the
 root cause of the "sources don't match" issue flagged in review. Reusing
