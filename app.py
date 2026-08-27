@@ -371,7 +371,7 @@ else:
         x_col = "timestamp" if "timestamp" in recent.columns else "date"
         pm_col = "pm25_avg" if "pm25_avg" in recent.columns else ("pm2_5" if "pm2_5" in recent.columns else "pm25")
 
-        # Actual AQI line (converted from raw PM2.5 concentration,
+        # Actual AQI line (converted from raw PM2.5 concentrati
         # formula as everywhere else, so this is on the same scale as the
         # prediction traces below -- mixing raw µg/m³ with AQI index
         # values on one chart would be misleading)
